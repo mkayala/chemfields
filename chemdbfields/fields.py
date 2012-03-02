@@ -22,15 +22,20 @@ from CHEM.Common.CanonicalAtomMapSmiles import (canonicalizeAtomMapSmiString,
                                                 )
 from CHEM.Common.MolExt import clearAtomMaps, removeNonsenseStereo
 
+from Util import log;
+
 from widgets import SmilesWidget
 
 class InvalidSmilesException(Exception):
     """Basic class for invalid smiles"""
     pass;
 
-def canonicalKekule(smi):
-    """Function to make sure that the kekule structure is canonical"""
-    mol = value_to_oemol(smi)
+def singleCanonicalKekuleMol(mol):
+    """Function to make sure that the kekule structure is canonical.
+
+    This *SHOULD* just work, but with symmetric structures can return
+    one of a few forms.
+    """
     removeNonsenseStereo(mol)
     OEAssignAromaticFlags(mol)
     for bond in mol.GetBonds():
@@ -40,8 +45,27 @@ def canonicalKekule(smi):
     OECanonicalOrderBonds(mol)
     OEClearAromaticFlags(mol)
     OEKekulize(mol)
-    return createCanonicalAtomMapSmiString(mol)
+    return mol
 
+def canonicalKekule(mol):
+    """A Hack to capture some switching Kekulization's.
+
+    Try 3 kekulizations, sort, use lowest lexigraphical ordered
+    """
+    m1 = OEGraphMol(mol)
+    m1 = singleCanonicalKekuleMol(m1)
+    smi1 = createCanonicalAtomMapSmiString(m1)
+    m2 = value_to_oemol(smi1)
+    m2 = singleCanonicalKekuleMol(m2)
+    smi2 = createCanonicalAtomMapSmiString(m2)
+    m3 = value_to_oemol(smi2)
+    m3 = singleCanonicalKekuleMol(m3)
+    smi3 = createCanonicalAtomMapSmiString(m3)
+
+    l = [smi1, smi2, smi3]
+    l.sort()
+    finalMol = value_to_oemol(l[0])
+    return finalMol
 
 def value_to_oemol(value):
     """Convenience to turn a value into an oemol
@@ -87,10 +111,7 @@ def clean_atom_map_smiles(value, doKekule=True, doArom=False):
     if doArom:
         OEAssignAromaticFlags(mol)
     if doKekule:
-        OEAssignAromaticFlags(mol)
-        smi = createStdAtomMapSmiString(mol)
-        smi = canonicalKekule(smi)
-        mol = value_to_oemol(smi)
+        mol = canonicalKekule(mol)
     return createCanonicalAtomMapSmiString(mol)
 
 
@@ -168,7 +189,10 @@ class AtomMapSmilesField(SmilesField):
     
     def to_python(self, value):
         """Ensure canonical atom mapped smiles"""
-        return clean_atom_map_smiles(value)
+        val = clean_atom_map_smiles(value)
+
+        #return clean_atom_map_smiles(value)
+        return val
 
 class AtomMapSmilesNonKekuleField(SmilesField):
     """Canonicalize atom mapped smiles without canonical Kekulization"""

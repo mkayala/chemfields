@@ -9,10 +9,14 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+import os
+thisPath = os.path.dirname(os.path.abspath(__file__))
+sqlite3File = os.path.join(thisPath, 'data', 'testdb.sql3db')
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': sqlite3File,                      # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -119,6 +123,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'chemdbfields'
 )
 
 # A sample logging configuration. The only tangible logging
@@ -129,10 +134,21 @@ INSTALLED_APPS = (
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'basic' : {
+            'format': '[%(asctime)s %(levelname)s][%(module)s %(funcName)s] %(message)s'
+         }
+    },
     'handlers': {
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'console': {
+            'level' : 'DEBUG',
+            'class' : 'logging.StreamHandler',
+            'formatter': 'basic',
+            'stream' : 'ext://sys.stderr'
         }
     },
     'loggers': {
@@ -140,6 +156,11 @@ LOGGING = {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
+        },
+        'chemdbfields': {
+            'handlers' : ['console'],
+            'level' : 'DEBUG',
+            'propagate': False
         },
     }
 }
