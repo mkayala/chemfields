@@ -165,6 +165,11 @@ class SmilesField(models.CharField):
         'invalid_smiles': 'Value %r is an invalid Smiles'
         }
 
+    def __init__(self, *args, **kwargs):
+        """Force the max_length to be large for the smiles fields"""
+        kwargs['max_length'] = 1000;
+        super(SmilesField, self).__init__(*args, **kwargs)
+    
     def get_prep_value(self, value):
         """Simply call to_python"""
         return self.to_python(value)
