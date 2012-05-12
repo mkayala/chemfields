@@ -12,15 +12,13 @@ from django.db import models;
 from django import forms;
 from django.core import exceptions
 
-from openeye.oechem import OEGraphMol, OEParseSmiles, OECreateIsoSmiString
-from openeye.oechem import OEAssignAromaticFlags, OEClearAromaticFlags, OEKekulize
-from openeye.oechem import OECanonicalOrderAtoms, OECanonicalOrderBonds
-from CHEM.Common.Util import standardizeSmiles, createAtomMapSmiString
-from CHEM.Common.Util import createStdAtomMapSmiString
-from CHEM.Common.CanonicalAtomMapSmiles import (canonicalizeAtomMapSmiString,
+from openeye import oechem as oe
+from chemfields.oeutil import standardizeSmiles, createAtomMapSmiString
+from chemfields.oeutil import createStdAtomMapSmiString
+from chemfields.oeutil.CanonicalAtomMapSmiles import (canonicalizeAtomMapSmiString,
                                                 createCanonicalAtomMapSmiString
                                                 )
-from CHEM.Common.MolExt import clearAtomMaps, removeNonsenseStereo
+from chemfields.oeutil import clearAtomMaps, removeNonsenseStereo
 
 from Util import log;
 
@@ -37,14 +35,14 @@ def singleCanonicalKekuleMol(mol):
     one of a few forms.
     """
     removeNonsenseStereo(mol)
-    OEAssignAromaticFlags(mol)
+    oe.OEAssignAromaticFlags(mol)
     for bond in mol.GetBonds():
         if bond.IsAromatic():
             bond.SetIntType(5)
-    OECanonicalOrderAtoms(mol)
-    OECanonicalOrderBonds(mol)
-    OEClearAromaticFlags(mol)
-    OEKekulize(mol)
+    oe.OECanonicalOrderAtoms(mol)
+    oe.OECanonicalOrderBonds(mol)
+    oe.OEClearAromaticFlags(mol)
+    oe.OEKekulize(mol)
     return mol
 
 def canonicalKekule(mol):
@@ -52,7 +50,7 @@ def canonicalKekule(mol):
 
     Try 3 kekulizations, sort, use lowest lexigraphical ordered
     """
-    m1 = OEGraphMol(mol)
+    m1 = oe.OEGraphMol(mol)
     m1 = singleCanonicalKekuleMol(m1)
     smi1 = createCanonicalAtomMapSmiString(m1)
     m2 = value_to_oemol(smi1)
@@ -79,9 +77,9 @@ def value_to_oemol(value):
     """
     if value == '':
         return None;
-    mol = OEGraphMol()
+    mol = oe.OEGraphMol()
     try:
-        success = OEParseSmiles(mol, str(value), False, True)
+        success = oe.OEParseSmiles(mol, str(value), False, True)
         if not success:    
             raise InvalidSmilesException(value);
     except (InvalidSmilesException, ):
@@ -98,8 +96,8 @@ def clean_iso_smiles(value):
         return ''
     clearAtomMaps(mol)
     removeNonsenseStereo(mol)
-    OEAssignAromaticFlags(mol)
-    return OECreateIsoSmiString(mol)
+    oe.OEAssignAromaticFlags(mol)
+    return oe.OECreateIsoSmiString(mol)
 
 def clean_atom_map_smiles(value, doKekule=True, doArom=False):
     """Basic function to clean a smiles to a atom_map_smiles
@@ -109,7 +107,7 @@ def clean_atom_map_smiles(value, doKekule=True, doArom=False):
         return '';
     removeNonsenseStereo(mol)
     if doArom:
-        OEAssignAromaticFlags(mol)
+        oe.OEAssignAromaticFlags(mol)
     if doKekule:
         mol = canonicalKekule(mol)
     return createCanonicalAtomMapSmiString(mol)
