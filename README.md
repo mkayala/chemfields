@@ -26,13 +26,14 @@ Requirements
 * Django 1.3+
 * OpenEye OEChem Toolkit 1.7.6+ (Note non-free software!)
 
-Usage
+Usage 
 ----- 
 
 Look in the chemfields/tests.py and oeutil/test/ module for some examples.  To run the tests
 
-  python manage.py test
-  python oeutil/test/TestCanonicalAtomMapSmiles.py
+     python manage.py test
+  
+     python oeutil/test/TestCanonicalAtomMapSmiles.py
 
 Acknowledgements
 ----------------
