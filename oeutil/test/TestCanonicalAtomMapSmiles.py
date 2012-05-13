@@ -4,9 +4,6 @@
 TestCanonicalAtomMapSmiles.py
 
 Created by Matt Kayala on 2011-05-10.
-Copyright (c) 2011 Institute for Genomics and Bioinformatics. All rights reserved.
-
-A Test Case in the CHEM Module.
 """
 import sys, os;
 import unittest;
@@ -21,7 +18,6 @@ from chemfields.oeutil.CanonicalAtomMapSmiles import canonicalizeAtomMapSmiStrin
 from chemfields.oeutil.CanonicalAtomMapSmiles import layBreadCrumbHydrogens, followBreadCrumbHydrogens
 from openeye.oechem import OEGraphMol, OEParseSmiles, OECreateIsoSmiString
 from openeye import oechem as oe;
-
 
 import Const, Util;
 from Util import log;

@@ -5,7 +5,6 @@ Fields for different types of smiles.
 
 File: fields.py
 Created 2012-01-24
-Copyright 2012. Institute of Genomics and Bioinformatics
 
 """
 from django.db import models;

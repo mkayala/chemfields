@@ -8,8 +8,6 @@ give the same molecule back.
 
 File: tests.py
 Created 2012-03-01
-Copyright 2012. Institute of Genomics and Bioinformatics
-
 
 """
 

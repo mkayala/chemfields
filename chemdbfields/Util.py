@@ -5,8 +5,6 @@ Set up Utils like logging
 
 File: Util.py
 Created 2012-03-01
-Copyright 2012. Institute of Genomics and Bioinformatics
-
 
 """
 

@@ -4,7 +4,6 @@
 CanonicalAtomMapSmiles.py
 
 Created by Matt Kayala on 2011-05-15.
-Copyright (c) 2011 Institute for Genomics and Bioinformatics. All rights reserved.
 """
 
 import sys
